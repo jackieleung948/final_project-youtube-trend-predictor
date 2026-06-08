@@ -61,7 +61,6 @@ def main():
     print(video_data)
 
     # Save to CSV
-    # https://www.geeksforgeeks.org/pandas/saving-a-pandas-dataframe-as-a-csv/
     df = pd.DataFrame(video_data)
     df.to_csv("youtube_videos.csv", index=False)
     print("Data saved to youtube_videos.csv")
