@@ -26,7 +26,7 @@ def main():
         part="snippet",
         q="recipe",
         type="video",
-        maxResults=3,
+        maxResults=50,
         order="date"
     )
     response = request.execute()
@@ -43,6 +43,7 @@ def main():
     response = request.execute()
     print(response)
 
+    # Only keep relevant fields for analysis
     video_data = []
     for item in response["items"]:
         video_data.append({
