@@ -20,11 +20,11 @@ def main():
         developerKey=API_KEY
     )
 
-    # Search for cooking videos
+    # Step 1: Search for cooking videos to get video IDs
     # https://developers.google.com/youtube/v3/docs/search/list
     request = youtube.search().list(
         part="snippet",
-        q="recipe",
+        q="cooking recipe",
         type="video",
         maxResults=50,
         order="date"
@@ -32,16 +32,14 @@ def main():
     response = request.execute()
     video_ids = [item["id"]["videoId"] for item in response["items"]]
 
-    print(video_ids)
 
-    # Get video details
+    # Step 2: Get video details 
     # https://developers.google.com/youtube/v3/docs/videos/list
     request = youtube.videos().list(
         part="snippet,statistics",
         id=",".join(video_ids)
     )
     response = request.execute()
-    print(response)
 
     # Only keep relevant fields for analysis
     video_data = []
