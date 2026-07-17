@@ -23,13 +23,14 @@ def main():
     # https://github.com/MaartenGr/KeyBERT
     # Extract keywords from video titles
     # Using paraphrase-multilingual-MiniLM-L12-v2 to support multiple languages, as some videos may have non-English titles or descriptions
+    # https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
     kw_model = KeyBERT(model="paraphrase-multilingual-MiniLM-L12-v2")
     df["title_keywords"] = df["title"].apply(lambda x: kw_model.extract_keywords(
         preprocess_text(x), keyphrase_ngram_range=(1, 2), top_n=3, stop_words="english"))
 
     # Extract keywords from video descriptions
     df["description_keywords"] = df["description"].apply(lambda x: kw_model.extract_keywords(preprocess_text(
-        x), keyphrase_ngram_range=(1, 2), top_n=10, stop_words="english") if isinstance(x, str) and len(x) > 0 else [])
+        x), keyphrase_ngram_range=(1, 2), top_n=5, stop_words="english") if isinstance(x, str) and len(x) > 0 else [])
 
     # Add custom stopwords related to cooking as they appear in nearly all videos and don't provide meaningful differentiation for trend prediction
     custom_stopwords = ["recipe", "shorts", "food", "cooking", "viral", "trending",
