@@ -1,6 +1,9 @@
 import pandas as pd
 import sqlite3
 from statsmodels.tsa.arima.model import ARIMA
+import warnings
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 
 def main():
