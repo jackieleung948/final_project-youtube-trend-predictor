@@ -50,14 +50,16 @@ def main():
         current_avg_frequency = df[df["keyword"] == keyword]["frequency"].mean()
         prediction["is_trending"] = prediction["predicted_frequency"] > current_avg_frequency
 
+    
+    # Save predictions to SQLite database
+    predictions_df = pd.DataFrame(predictions)
+
     # Check if predictions list is empty before saving to database
     if predictions_df.empty:
         print("No predictions were generated. Exiting without saving to database.")
         conn.close()
         return
     
-    # Save predictions to SQLite database
-    predictions_df = pd.DataFrame(predictions)
     predictions_df.to_sql("keyword_predictions", conn, if_exists="replace", index=False)
     print("ARIMA predictions saved to keyword_predictions table in youtube_trends.db")
 
