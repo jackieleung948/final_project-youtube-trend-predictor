@@ -28,7 +28,7 @@ def main():
     for keyword in df["keyword"].unique():
         keyword_df = df[df["keyword"] == keyword].copy()
         keyword_df["hour_bucket"] = pd.to_datetime(keyword_df["hour_bucket"], format='%Y-%m-%d %H')
-        keyword_df = keyword_df.set_index("hour_bucket").asfreq('H').fillna(0)
+        keyword_df = keyword_df.set_index("hour_bucket").asfreq('h').fillna(0)
         
         try:
             model = ARIMA(keyword_df["frequency"], order=(1, 1, 1))
