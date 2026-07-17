@@ -9,12 +9,16 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 def main():
 
     # Read from SQLite database to get keywords and their associated frequency
+    # Temporary: Filtered to keywords collected after 2026-07-17 18:00:00 to validate keyword filtering approach for ARIMA modeling
+    # namely additional custom stopwords and low relevanace score (<0.5)
     conn = sqlite3.connect("youtube_trends.db")
     df = pd.read_sql_query("SELECT "
                            "keyword,"
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
                            "COUNT(*) AS frequency "
-                           "FROM keywords GROUP BY keyword, hour_bucket ORDER BY keyword, hour_bucket", conn)
+                           "FROM keywords "
+                           "WHERE collected_at >= '2026-07-17 18:00:00' "
+                           "GROUP BY keyword, hour_bucket ORDER BY keyword, hour_bucket", conn)
     
     # Filter to keywords with at least 10 hour buckets
     keyword_counts = df.groupby("keyword")["hour_bucket"].nunique()
