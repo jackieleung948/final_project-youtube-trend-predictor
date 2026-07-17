@@ -38,6 +38,7 @@ numpy==2.4.6
 oauthlib==3.3.1
 packaging==26.2
 pandas==3.0.3
+patsy==1.0.2
 pillow==12.3.0
 proto-plus==1.27.2
 protobuf==7.34.1
@@ -59,6 +60,7 @@ scipy==1.17.1
 sentence-transformers==5.5.1
 shellingham==1.5.4
 six==1.17.0
+statsmodels==0.14.6
 sympy==1.14.0
 threadpoolctl==3.6.0
 tokenizers==0.22.2
