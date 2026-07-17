@@ -32,11 +32,20 @@ def main():
     df["description_keywords"] = df["description"].apply(lambda x: kw_model.extract_keywords(preprocess_text(
         x), keyphrase_ngram_range=(1, 2), top_n=5, stop_words="english") if isinstance(x, str) and len(x) > 0 else [])
 
+    # Filter out keywords below a 0.5 relevance score threshold (0.5 was chosen based on a query from 50 runs of data)
+    min_relevance_score = 0.5
+    df["title_keywords"] = df["title_keywords"].apply(lambda keywords: [(
+        kw, score) for kw, score in keywords if score >= min_relevance_score])
+    df["description_keywords"] = df["description_keywords"].apply(lambda keywords: [(
+        kw, score) for kw, score in keywords if score >= min_relevance_score])
+    
     # Add custom stopwords related to cooking as they appear in nearly all videos and don't provide meaningful differentiation for trend prediction
     custom_stopwords = ["recipe", "shorts", "food", "cooking", "viral", "trending",
                         "ytshorts", "short", "reels", "youtube", "shortsfeed",
                         "shortvideo", "youtubeshorts", "homecooking", "easyrecipe",
-                        "viralrecipe", "foodie", "homemade", "streetfood"]
+                        "viralrecipe", "foodie", "homemade", "streetfood", "video", "cookingvideo", "dailyvlog",
+                        "funny", "comedy", "ingredients", "recipes",
+                        "viralvideo", "lifestyle"]
     df["title_keywords"] = df["title_keywords"].apply(lambda keywords: [
                                                       kw for kw in keywords if not any(word in custom_stopwords for word in kw[0].lower().split())])
     df["description_keywords"] = df["description_keywords"].apply(lambda keywords: [
