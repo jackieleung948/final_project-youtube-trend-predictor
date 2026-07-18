@@ -27,6 +27,11 @@ def main():
     print(f"Filtered to {len(valid_keywords)} keywords with at least 10 hour buckets for ARIMA modeling.")
     print(valid_keywords[:10])
 
+    # Limit to top 50 keywords by total frequency for ARIMA modeling
+    top_keywords = df.groupby("keyword")["frequency"].sum().nlargest(50).index
+    df = df[df["keyword"].isin(top_keywords)]
+    print("Filtered to top 50 keywords by total frequency for ARIMA modeling:")
+
     # https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.html
     # https://www.statsmodels.org/stable/examples/notebooks/generated/tsa_arma_0.html
 
