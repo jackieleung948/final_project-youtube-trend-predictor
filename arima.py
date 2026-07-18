@@ -17,7 +17,7 @@ def main():
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
                            "COUNT(*) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-17 18:00:00' "
+                           "WHERE collected_at >= '2026-07-17T18:00:00' "
                            "GROUP BY keyword, hour_bucket ORDER BY keyword, hour_bucket", conn)
     
     # Filter to keywords with at least 10 hour buckets
