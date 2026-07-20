@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 import sqlite3
 from statsmodels.tsa.arima.model import ARIMA
 import warnings
@@ -75,10 +76,15 @@ def main():
     predictions_df.to_sql("keyword_predictions", conn, if_exists="replace", index=False)
     print("ARIMA predictions saved to keyword_predictions table in youtube_trends.db")
 
-    # Print top 10 predicted trending keywords for validation
+    # Visualize the top 10 predicted trending keywords as a bar chart
     top10 = predictions_df[predictions_df["is_trending"]].groupby("keyword")["predicted_frequency"].sum().nlargest(10)
-    print("\n=== TOP 10 PREDICTED TRENDING KEYWORDS ===")
-    print(top10)
+    top10.plot(kind="barh", title="ARIMA Predicted Trending Keywords", figsize=(12, 6), legend=False)
+    plt.xlabel("Predicted Frequency")
+    plt.ylabel("Keyword")
+    plt.grid(True, axis='x')
+    plt.tight_layout()
+    plt.savefig("arima_predictions.png")
+    print("ARIMA predictions chart saved to arima_predictions.png")
 
     conn.close()
 

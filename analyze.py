@@ -37,7 +37,7 @@ def main():
 
     # Visualize the top 10 trending keywords with their trend scores as a bar chart
     top10 = df.groupby("keyword")["trend_score"].sum().nlargest(10)
-    top10.plot(kind="barh", title="Top 10 Trending Keywords Now", figsize=(12, 6))
+    top10.plot(kind="barh", title="Top 10 Trending Keywords Now", figsize=(12, 6), legend=False)
     plt.xlabel("Trend Score")
     plt.ylabel("Keyword")
     plt.grid(True, axis='x')
