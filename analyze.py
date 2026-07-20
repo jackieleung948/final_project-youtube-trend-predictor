@@ -23,16 +23,26 @@ def main():
     # Output ranked list of keywords with their trend scores to database
     df.to_sql("keyword_trends", conn, if_exists="replace", index=False)
 
-    # Visualize the top 10 trending keywords over time
+    # Visualize the top 10 trending keywords over time as a line chart
     top_keywords = df.groupby("keyword")["trend_score"].sum().nlargest(10).index
     pivot_df = df[df["keyword"].isin(top_keywords)].pivot(index="hour_bucket", columns="keyword", values="trend_score")
-    pivot_df.plot(kind="line", title="Top 10 Trending Keywords Over Time")
+    pivot_df.plot(kind="line", title="Top 10 Trending Keywords Over Time", figsize=(12, 6))
+    plt.xlabel("Hour Bucket")
+    plt.ylabel("Trend Score")
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
     plt.savefig("keyword_trends.png")
 
-    # Print top 10 trending keywords with their trend scores as validation
-    print("\n=== TOP 10 TRENDING KEYWORDS ===")
+    # Visualize the top 10 trending keywords with their trend scores as a bar chart
     top10 = df.groupby("keyword")["trend_score"].sum().nlargest(10)
-    print(top10)
+    top10.plot(kind="barh", title="Top 10 Trending Keywords Now", figsize=(12, 6))
+    plt.xlabel("Trend Score")
+    plt.ylabel("Keyword")
+    plt.grid(True, axis='x')
+    plt.tight_layout()
+    plt.savefig("top10_trends.png")
 
     conn.close()
 
