@@ -50,7 +50,7 @@ def main():
                         "shortvideo", "youtubeshorts", "homecooking", "easyrecipe",
                         "viralrecipe", "foodie", "homemade", "streetfood", "video", "cookingvideo", "dailyvlog",
                         "funny", "comedy", "ingredients", "recipes",
-                        "viralvideo", "lifestyle", "indianfood"]
+                        "viralvideo", "lifestyle", "indianfood", "bell icon"]
     df["title_keywords"] = df["title_keywords"].apply(lambda keywords: [
                                                       kw for kw in keywords if not any(word in custom_stopwords for word in kw[0].lower().split())])
     df["description_keywords"] = df["description_keywords"].apply(lambda keywords: [

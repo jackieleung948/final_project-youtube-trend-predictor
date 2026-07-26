@@ -28,13 +28,27 @@ def split_sequence(sequence, n_steps):
 def main():
     # Read from SQLite database to get keywords and their associated frequency
     conn = sqlite3.connect("youtube_trends.db")
+
+    # Find keywords appearing in at least 4 unique videos
+    video_filter_df = pd.read_sql_query(
+        """
+        SELECT keyword
+        FROM keywords
+        WHERE collected_at >= '2026-07-17T18:00:00'
+        GROUP BY keyword
+        HAVING COUNT(DISTINCT video_id) > 3
+        """, conn
+    )
+    valid_by_video_count = video_filter_df["keyword"].tolist()
+
     df = pd.read_sql_query("SELECT "
                            "keyword,"
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
                            "COUNT(*) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-26T14:22:00' "
-                           "GROUP BY keyword, hour_bucket ORDER BY keyword, hour_bucket", conn)
+                           "WHERE collected_at >= '2026-07-17T18:00:00' "
+                           "GROUP BY keyword, hour_bucket "
+                           "ORDER BY keyword, hour_bucket", conn)
 
     # Filter to keywords with at least 10 hour buckets
     keyword_counts = df.groupby("keyword")["hour_bucket"].nunique()
@@ -43,6 +57,11 @@ def main():
     print(
         f"Filtered to {len(valid_keywords)} keywords with at least 10 hour buckets for LSTM modeling.")
     print(valid_keywords[:10])
+
+    # Filter to keywords appearing in >3 distinct videos
+    df = df[df["keyword"].isin(valid_by_video_count)]
+    print(
+        f"Filtered to {len(valid_by_video_count)} keywords appearing in at least 4 distinct videos.")
 
     # Limit to top 50 keywords by total frequency for LSTM modeling
     top_keywords = df.groupby("keyword")["frequency"].sum().nlargest(50).index
@@ -119,8 +138,10 @@ def main():
     print(top10)
 
     # Visualize the top 10 predicted trending keywords as a bar chart
-    top10 = predictions_df[predictions_df["is_trending"]].groupby("keyword")["predicted_frequency"].sum().nlargest(10)
-    top10.plot(kind="barh", title="LSTM Predicted Trending Keywords", figsize=(12, 6), legend=False)
+    top10 = predictions_df[predictions_df["is_trending"]].groupby(
+        "keyword")["predicted_frequency"].sum().nlargest(10)
+    top10.plot(kind="barh", title="LSTM Predicted Trending Keywords",
+               figsize=(12, 6), legend=False)
     plt.xlabel("Predicted Frequency")
     plt.ylabel("Keyword")
     plt.grid(True, axis='x')
