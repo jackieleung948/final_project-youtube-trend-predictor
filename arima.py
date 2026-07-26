@@ -16,9 +16,9 @@ def main():
         """
         SELECT keyword
         FROM keywords
-        WHERE collected_at >= '2026-07-17T18:00:00'
+        WHERE collected_at >= '2026-07-26T14:22:00'
         GROUP BY keyword
-        HAVING COUNT(DISTINCT at least 4) > 3
+        HAVING COUNT(DISTINCT video_id) > 3
         """, conn
     )
     valid_by_video_count = video_filter_df["keyword"].tolist()
@@ -32,7 +32,7 @@ def main():
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
                            "COUNT(*) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-17T18:00:00' "
+                           "WHERE collected_at >= '2026-07-26T14:22:00' "
                            "GROUP BY keyword, hour_bucket "
                            "ORDER BY keyword, hour_bucket", conn)
 
@@ -95,7 +95,7 @@ def main():
         conn.close()
         return
 
-    predictions_df.to_sql("keyword_predictions", conn,
+    predictions_df.to_sql("arima_predictions", conn,
                           if_exists="replace", index=False)
     print("ARIMA predictions saved to keyword_predictions table in youtube_trends.db")
 

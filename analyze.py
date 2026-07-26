@@ -13,7 +13,7 @@ def main():
         """
             SELECT keyword
             FROM keywords
-            WHERE collected_at >= '2026-07-17T18:00:00'
+            WHERE collected_at >= '2026-07-26T14:22:00'
             GROUP BY keyword
             HAVING COUNT(DISTINCT video_id) > 3
             """, conn
@@ -28,7 +28,7 @@ def main():
                            "AVG(metrics.engagement_ratio) as avg_engagement_ratio, "
                            "(COUNT(keywords.keyword) * AVG(metrics.view_velocity) * AVG(metrics.engagement_ratio)) AS trend_score "
                            "FROM keywords JOIN metrics ON keywords.video_id=metrics.video_id "
-                           "WHERE keywords.collected_at >= '2026-07-17T18:00:00' "
+                           "WHERE keywords.collected_at >= '2026-07-26T14:22:00' "
                            "GROUP BY keywords.keyword, hour_bucket ORDER BY trend_score DESC", conn)
 
  # Filter to keywords appearing in >3 distinct videos
