@@ -12,13 +12,14 @@ def main():
     # Read from SQLite database to get keywords and their associated frequency
     # Temporary: Filtered to keywords collected after 2026-07-17 18:00:00 to validate keyword filtering approach for ARIMA modeling
     # namely additional custom stopwords and low relevanace score (<0.5)
+    # Temporary: Updated date filter to 2026-07-26T14:22:00 for keyword deduplication and normalization testing
     conn = sqlite3.connect("youtube_trends.db")
     df = pd.read_sql_query("SELECT "
                            "keyword,"
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
                            "COUNT(*) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-17T18:00:00' "
+                           "WHERE collected_at >= '2026-07-26T14:22:00' "
                            "GROUP BY keyword, hour_bucket ORDER BY keyword, hour_bucket", conn)
     
     # Filter to keywords with at least 10 hour buckets

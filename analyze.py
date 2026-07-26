@@ -13,7 +13,9 @@ def main():
                            "AVG(metrics.view_velocity) as avg_view_velocity, "
                            "AVG(metrics.engagement_ratio) as avg_engagement_ratio, "
                            "(COUNT(keywords.keyword) * AVG(metrics.view_velocity) * AVG(metrics.engagement_ratio)) AS trend_score "
-                           "FROM keywords JOIN metrics ON keywords.video_id=metrics.video_id GROUP BY keywords.keyword, hour_bucket ORDER BY trend_score DESC", conn)
+                           "FROM keywords JOIN metrics ON keywords.video_id=metrics.video_id " 
+                           "WHERE collected_at >= '2026-07-26T14:22:00' "
+                           "GROUP BY keywords.keyword, hour_bucket ORDER BY trend_score DESC", conn)
 
     # Calculate growth rate between hours for each keyword
     df = df.sort_values(["keyword", "hour_bucket"])

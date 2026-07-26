@@ -11,6 +11,11 @@ def preprocess_text(text):
         return text.replace("#", " ")
     return text
 
+def normalize_keyword(keywords):
+    """
+    Sort words alphabetically within each keyword phrase
+    """
+    return " ".join(sorted(keywords.split()))
 
 def main():
 
@@ -61,18 +66,20 @@ def main():
         # Save title keywords
         for keyword, relevance_score in row["title_keywords"]:
             source = "title"
+            normalized_keyword = normalize_keyword(keyword)
             cursor.execute('''
                 INSERT INTO keywords (video_id, collected_at, source, keyword, relevance_score)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (video_id, collected_at, source, keyword, relevance_score))
+            ''', (video_id, collected_at, source, normalized_keyword, relevance_score))
 
         # Save description keywords
         for keyword, relevance_score in row["description_keywords"]:
             source = "description"
+            normalized_keyword = normalize_keyword(keyword)
             cursor.execute('''
                 INSERT INTO keywords (video_id, collected_at, source, keyword, relevance_score)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (video_id, collected_at, source, keyword, relevance_score))
+            ''', (video_id, collected_at, source, normalized_keyword, relevance_score))
 
     print("Data saved to keywords table in youtube_trends.db")
 
