@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlite3
 from keybert import KeyBERT
+from datetime import datetime
 
 
 def preprocess_text(text):
@@ -18,6 +19,12 @@ def normalize_keyword(keywords):
     return " ".join(sorted(keywords.split()))
 
 def main():
+
+    # Only run keyword extraction every 3 hours to reduce CPU usage
+    current_hour = datetime.utcnow().hour
+    if current_hour % 3 != 0:
+        print(f"Hour {current_hour} - skipping keyword extraction (runs every 3 hours)")
+        return
 
     # Read from SQLite database to get video titles and descriptions
     conn = sqlite3.connect("youtube_trends.db")
