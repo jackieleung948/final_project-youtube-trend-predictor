@@ -29,12 +29,14 @@ def main():
     # Read from SQLite database to get keywords and their associated frequency
     conn = sqlite3.connect("youtube_trends.db")
 
+    DATA_START = '2026-07-26T14:22:00'
+
     # Find keywords appearing in at least 4 unique videos
     video_filter_df = pd.read_sql_query(
         """
         SELECT keyword
         FROM keywords
-        WHERE collected_at >= '2026-07-26T14:22:00'
+        WHERE collected_at >= '{DATA_START}'
         GROUP BY keyword
         HAVING COUNT(DISTINCT video_id) > 3
         """, conn
@@ -44,9 +46,9 @@ def main():
     df = pd.read_sql_query("SELECT "
                            "keyword,"
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
-                           "COUNT(*) AS frequency "
+                           "COUNT(DISTINCT video_id) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-26T14:22:00' "
+                           f"WHERE collected_at >= '{DATA_START}' "
                            "GROUP BY keyword, hour_bucket "
                            "ORDER BY keyword, hour_bucket", conn)
 
@@ -71,11 +73,13 @@ def main():
     # For each keyword, fit an LSTM model to predict the next 6 hours' frequency
     # Followed steps from https://machinelearningmastery.com/how-to-develop-lstm-models-for-time-series-forecasting/
     predictions = []
+    avg_frequency = {}
     for keyword in df["keyword"].unique():
         keyword_df = df[df["keyword"] == keyword].copy()
         keyword_df["hour_bucket"] = pd.to_datetime(
             keyword_df["hour_bucket"], format='%Y-%m-%d %H')
         keyword_df = keyword_df.set_index("hour_bucket").asfreq('h').fillna(0)
+        avg_frequency[keyword] = keyword_df["frequency"].mean()
 
         # Choose a number of time steps for the LSTM model. Using 6 time steps to match ARIMA's 6-hour forecast horizon
         n_steps = 6
@@ -117,8 +121,7 @@ def main():
     # Flag keywords where forecast > current average frequency
     for prediction in predictions:
         keyword = prediction["keyword"]
-        current_avg_frequency = df[df["keyword"]
-                                   == keyword]["frequency"].mean()
+        current_avg_frequency = avg_frequency[prediction["keyword"]]
         prediction["is_trending"] = prediction["predicted_frequency"] > current_avg_frequency
 
     # Save to database

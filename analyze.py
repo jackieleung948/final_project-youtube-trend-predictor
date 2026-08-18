@@ -8,12 +8,14 @@ def main():
     # Read from SQLite database to get keywords and their associated metrics and calculate trend scores
     conn = sqlite3.connect("youtube_trends.db")
 
+    DATA_START = '2026-07-26T14:22:00'
+
     # Find keywords appearing in at least 4 unique videos
     video_filter_df = pd.read_sql_query(
         """
             SELECT keyword
             FROM keywords
-            WHERE collected_at >= '2026-07-26T14:22:00'
+            WHERE collected_at >= '{DATA_START}'
             GROUP BY keyword
             HAVING COUNT(DISTINCT video_id) > 3
             """, conn
@@ -23,12 +25,13 @@ def main():
     df = pd.read_sql_query("SELECT "
                            "keywords.keyword, "
                            "STRFTIME('%Y-%m-%d %H', keywords.collected_at) as hour_bucket, "
-                           "COUNT(keywords.keyword) AS keyword_count, "
+                           "COUNT(DISTINCT keywords.video_id) AS keyword_count, "
                            "AVG(metrics.view_velocity) as avg_view_velocity, "
                            "AVG(metrics.engagement_ratio) as avg_engagement_ratio, "
-                           "(COUNT(keywords.keyword) * AVG(metrics.view_velocity) * AVG(metrics.engagement_ratio)) AS trend_score "
+                           "(COUNT(DISTINCT keywords.video_id) * AVG(metrics.view_velocity) * AVG(metrics.engagement_ratio)) AS trend_score "
                            "FROM keywords JOIN metrics ON keywords.video_id=metrics.video_id "
-                           "WHERE keywords.collected_at >= '2026-07-26T14:22:00' "
+                           "AND STRFTIME('%Y-%m-%d %H', keywords.collected_at) = STRFTIME('%Y-%m-%d %H', metrics.collected_at) "
+                           f"WHERE keywords.collected_at >= '{DATA_START}' "
                            "GROUP BY keywords.keyword, hour_bucket ORDER BY trend_score DESC", conn)
 
  # Filter to keywords appearing in >3 distinct videos
@@ -47,6 +50,7 @@ def main():
     # Visualize the top 10 trending keywords over time as a line chart
     top_keywords = df.groupby(
         "keyword")["trend_score"].sum().nlargest(10).index
+    print(len(df), df.head())
     pivot_df = df[df["keyword"].isin(top_keywords)].pivot(
         index="hour_bucket", columns="keyword", values="trend_score")
     plt.figure(figsize=(12, 6))

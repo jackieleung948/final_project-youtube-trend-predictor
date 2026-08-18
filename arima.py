@@ -11,12 +11,15 @@ def main():
 
     conn = sqlite3.connect("youtube_trends.db")
 
+    DATA_START = '2026-07-26T14:22:00'
+
+
     # Find keywords appearing in at least 4 unique videos
     video_filter_df = pd.read_sql_query(
         """
         SELECT keyword
         FROM keywords
-        WHERE collected_at >= '2026-07-26T14:22:00'
+        WHERE collected_at >= '{DATA_START}'
         GROUP BY keyword
         HAVING COUNT(DISTINCT video_id) > 3
         """, conn
@@ -30,9 +33,9 @@ def main():
     df = pd.read_sql_query("SELECT "
                            "keyword,"
                            "STRFTIME('%Y-%m-%d %H', collected_at) as hour_bucket, "
-                           "COUNT(*) AS frequency "
+                           "COUNT(DISTINCT video_id) AS frequency "
                            "FROM keywords "
-                           "WHERE collected_at >= '2026-07-26T14:22:00' "
+                           f"WHERE collected_at >= '{DATA_START}' "
                            "GROUP BY keyword, hour_bucket "
                            "ORDER BY keyword, hour_bucket", conn)
 
@@ -47,7 +50,7 @@ def main():
     # Filter to keywords appearing in >3 distinct videos
     df = df[df["keyword"].isin(valid_by_video_count)]
     print(
-        f"Filtered to {len(valid_by_video_count)} keywords appearing in at least 3 distinct videos.")
+        f"Filtered to {len(valid_by_video_count)} keywords appearing in at least 4 distinct videos.")
 
     # Limit to top 50 keywords by total frequency for ARIMA modeling
     top_keywords = df.groupby("keyword")["frequency"].sum().nlargest(50).index
@@ -59,11 +62,13 @@ def main():
 
     # For each keyword, fit an ARIMA model to predict the next 6 hours' frequency
     predictions = []
+    avg_frequency = {}
     for keyword in df["keyword"].unique():
         keyword_df = df[df["keyword"] == keyword].copy()
         keyword_df["hour_bucket"] = pd.to_datetime(
             keyword_df["hour_bucket"], format='%Y-%m-%d %H')
         keyword_df = keyword_df.set_index("hour_bucket").asfreq('h').fillna(0)
+        avg_frequency[keyword] = keyword_df["frequency"].mean()
 
         try:
             model = ARIMA(keyword_df["frequency"], order=(1, 1, 1))
@@ -82,8 +87,7 @@ def main():
     # Flag keywords where forecast > current average frequency
     for prediction in predictions:
         keyword = prediction["keyword"]
-        current_avg_frequency = df[df["keyword"]
-                                   == keyword]["frequency"].mean()
+        current_avg_frequency = avg_frequency[prediction["keyword"]]
         prediction["is_trending"] = prediction["predicted_frequency"] > current_avg_frequency
 
     # Save predictions to SQLite database
@@ -97,7 +101,7 @@ def main():
 
     predictions_df.to_sql("arima_predictions", conn,
                           if_exists="replace", index=False)
-    print("ARIMA predictions saved to keyword_predictions table in youtube_trends.db")
+    print("ARIMA predictions saved to arima_predictions table in youtube_trends.db")
 
     # Visualize the top 10 predicted trending keywords as a bar chart
     top10 = predictions_df[predictions_df["is_trending"]].groupby(
