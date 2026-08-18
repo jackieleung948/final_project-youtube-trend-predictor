@@ -11,7 +11,7 @@ API_KEY = os.getenv("YOUTUBE_API_KEY")
 DB_PATH = "youtube_trends.db"
 GAP_START = datetime(2026, 7, 27, 9, tzinfo=timezone.utc)
 GAP_END = datetime(2026, 8, 18, 9, tzinfo=timezone.utc)
-MAX_CALLS = 60
+MAX_CALLS = 75
 
 def rfc3339_format(dt):
     """Format a datetime object to RFC 3339 format."""
