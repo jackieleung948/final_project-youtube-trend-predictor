@@ -1,5 +1,11 @@
 DB_PATH = "youtube_trends.db"
-DATA_START = '2026-07-26T14:22:00' 
-TRAIN_END = '2026-08-16T14:22:00'  # End of training data for backtesting
-TEST_END = '2026-08-23T14:22:00'  # End of testing data for backtesting
+DATA_START = '2026-07-26T14:22:00'  # Start of data to consider for backtesting
+TRAIN_END = '2026-08-18 12'  # End of training data for backtesting
+TEST_END = '2026-08-19 08'  # End of testing data for backtesting
 HORIZON = 6 # Number of hours to forecast ahead for backtesting
+BUCKET_HOURS = 24 # Number of hours to aggregate data into buckets for backtesting
+STEP = 6
+MIN_HOUR_BUCKETS = 10  # Minimum number of hour buckets a keyword must appear in to be considered
+MIN_VIDEO_COUNT = 4  # Minimum number of unique videos a keyword must appear in to be considered
+TOP_N = 50 # Number of top keywords to consider based on frequency
+LABELS_CSV = "labels/backtest_labels.csv"  # CSV file containing labels for keywords
