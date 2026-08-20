@@ -107,7 +107,46 @@ def forecast_lstm(fitted, history, h, n_steps=N_STEPS):
         out.append(nxt); sequence.append(nxt)
     return np.clip(np.array(out) * (high - low) + low, 0, None)
 
+def fit_residual_lstm(train, n_steps=N_STEPS, order=(1,1,1)):
+    """
+    Fit ARIMA on train, then LSTM on its residuals.
+    Return (model, mu, sd) or None
+    """
+    train = np.asarray(train, dtype=float)
+    try:
+        arima_fit = ARIMA(train, order=order).fit()
+    except Exception:
+        return None
+    residual = train - np.asarray(arima_fit.fittedvalues)
+    mean, std = residual.mean(), residual.std()
+    if std == 0 or len(residual) <= n_steps + 1:
+        return None
+    scaled = (residual - mean) / std
+    X, y = split_sequence(scaled, n_steps)
+    X = X.reshape((X.shape[0], X.shape[1],1))
+    model = Sequential([Input(shape=(n_steps, 1)), LSTM(50, activation="relu"), Dense(1)])
+    model.compile(optimizer="adam", loss="mse")
+    model.fit(X, y, epochs=200, verbose=0, callbacks=[EarlyStopping(monitor="loss", patience=10, restore_best_weights=True)])
+    return model, mean, std
 
-
-
-    
+def forecast_residual_hybrid(fitted, history, h, n_steps=N_STEPS, order=(1,1,1)):
+    """
+    ARIMA refit on history + LSTM forecast of its residuals.
+    """
+    if fitted is None:
+        return None
+    model, mean, std = fitted
+    history = np.asarray(history, dtype=float)
+    try:
+        arima_fit = ARIMA(history, order=order).fit()
+    except Exception:
+        return None
+    arima_fc = np.asarray(arima_fit.forecast(steps=h))
+    residual = (history - np.asarray(arima_fit.fittedvalues) - mean) / std
+    sequence = residual.tolist()[-n_steps:]
+    out = []
+    for _ in range(h):
+        x = np.array(sequence[-n_steps:]).reshape((1, n_steps, 1))
+        nxt = float(model.predict(x, verbose=0)[0][0])
+        out.append(nxt); sequence.append(nxt)
+    return np.clip(arima_fc + (np.array(out) * std + mean), 0, None)

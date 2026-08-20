@@ -3,7 +3,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from config import (DB_PATH, DATA_START, TRAIN_END, TEST_END, MIN_HOUR_BUCKETS, BUCKET_HOURS, MIN_VIDEO_COUNT, TOP_N, HORIZON_HOURS, HORIZON_BUCKETS, STEP, LABELS_CSV)
-from models import forecast_arima, naive_last, naive_mean, fit_lstm, forecast_lstm
+from models import forecast_arima, naive_last, naive_mean, fit_lstm, forecast_lstm, forecast_residual_hybrid, fit_residual_lstm
 
 # Get the data from the database and filter it based on the configuration
 def get_filtered_data():
@@ -111,7 +111,6 @@ def rolling_windows(n_train, n_total, h, step):
     return windows
 
 MODEL_FUNCTIONS = {
-    "arima": forecast_arima,
     "naive_last": naive_last,
     "naive_mean": naive_mean
 }
@@ -130,16 +129,24 @@ def run(models):
     records, failures = [], 0
     for keyword, ser in series.items():
         train_ser = ser[ser.index < boundary]
-        fitted_lstm = fit_lstm(train_ser.values) if "lstm" in models else None
+        fitted_lstm = fit_lstm(train_ser.values) if ("lstm" in models or "hybrid_avg" in models) else None
+        fitted_residual = fit_residual_lstm(train_ser.values) if "hybrid_residual" in models else None
         train_min, train_max, train_mean = train_ser.min(), train_ser.max(), train_ser.mean()
         n_train, n_total = len(train_ser), len(ser)
         windows = rolling_windows(n_train, n_total, HORIZON_BUCKETS, max(1, STEP // BUCKET_HOURS))
         for train_start, train_end, test_start, test_end in windows:
             train_data = ser.iloc[train_start:train_end]
             test_data = ser.iloc[test_start:test_end]
+            arima_fc = lstm_fc = None
             for model_name in models:
-                if model_name == "lstm":
-                    forecast = forecast_lstm(fitted_lstm, train_data.values, HORIZON_BUCKETS)
+                if model_name == "arima":
+                    forecast = arima_fc = forecast_arima(train_data, HORIZON_BUCKETS)
+                elif model_name == "lstm":
+                    forecast = lstm_fc = forecast_lstm(fitted_lstm, train_data.values, HORIZON_BUCKETS)
+                elif model_name == "hybrid_avg":
+                    forecast = None if (arima_fc is None or lstm_fc is None) else 0.5 * arima_fc + 0.5 * lstm_fc
+                elif model_name == "hybrid_residual":
+                    forecast = forecast_residual_hybrid(fitted_residual, train_data.values, HORIZON_BUCKETS)
                 elif model_name in MODEL_FUNCTIONS:
                     forecast = MODEL_FUNCTIONS[model_name](train_data, HORIZON_BUCKETS)
                 else:
