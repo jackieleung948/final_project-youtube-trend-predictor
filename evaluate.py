@@ -3,7 +3,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from config import (DB_PATH, DATA_START, TRAIN_END, TEST_END, MIN_HOUR_BUCKETS, BUCKET_HOURS, MIN_VIDEO_COUNT, TOP_N, HORIZON_HOURS, HORIZON_BUCKETS, STEP, LABELS_CSV)
-from models import forecast_arima, naive_last, naive_mean
+from models import forecast_arima, naive_last, naive_mean, fit_lstm, forecast_lstm
 
 # Get the data from the database and filter it based on the configuration
 def get_filtered_data():
@@ -88,8 +88,8 @@ def mae_norm(y_true, y_pred, low, high):
     Returns:
     - mae_norm: float, the normalized mean absolute error
     """
-    range = high - low or 1.0
-    return np.mean(np.abs(y_true - y_pred)) / range
+    rng = high - low or 1.0
+    return np.mean(np.abs(y_true - y_pred)) / rng
 
 def rolling_windows(n_train, n_total, h, step):
     """
@@ -130,36 +130,35 @@ def run(models):
     records, failures = [], 0
     for keyword, ser in series.items():
         train_ser = ser[ser.index < boundary]
+        fitted_lstm = fit_lstm(train_ser.values) if "lstm" in models else None
         train_min, train_max, train_mean = train_ser.min(), train_ser.max(), train_ser.mean()
         n_train, n_total = len(train_ser), len(ser)
         windows = rolling_windows(n_train, n_total, HORIZON_BUCKETS, max(1, STEP // BUCKET_HOURS))
-        for model_name in models:
-            model_func = MODEL_FUNCTIONS.get(model_name)
-            if model_func is None:
-                print(f"Model {model_name} not recognized. Skipping.")
-                continue
-            for train_start, train_end, test_start, test_end in windows:
-                train_data = ser.iloc[train_start:train_end]
-                test_data = ser.iloc[test_start:test_end]
-                try:
-                    forecast = model_func(train_data, HORIZON_BUCKETS)
-                    if forecast is None or len(forecast) != len(test_data):
-                        raise ValueError("Forecast length mismatch or None returned.")
-                    records.append({
-                        "keyword": keyword,
-                        "model": model_name,
-                        "train_start": train_data.index[0],
-                        "train_end": train_data.index[-1],
-                        "test_start": test_data.index[0],
-                        "test_end": test_data.index[-1],
-                        "mae_raw": mae_raw(test_data.values, forecast),
-                        "mae_norm": mae_norm(test_data.values, forecast, train_min, train_max),
-                        "pred_trending": bool(forecast.mean() > train_mean)
-
-                    })
-                except Exception as e:
-                    print(f"Error evaluating {model_name} for keyword '{keyword}': {e}")
+        for train_start, train_end, test_start, test_end in windows:
+            train_data = ser.iloc[train_start:train_end]
+            test_data = ser.iloc[test_start:test_end]
+            for model_name in models:
+                if model_name == "lstm":
+                    forecast = forecast_lstm(fitted_lstm, train_data.values, HORIZON_BUCKETS)
+                elif model_name in MODEL_FUNCTIONS:
+                    forecast = MODEL_FUNCTIONS[model_name](train_data, HORIZON_BUCKETS)
+                else:
+                    print(f"Model {model_name} not recognized. Skipping")
+                    continue
+                if forecast is None or len(forecast) != len(test_data):
                     failures += 1
+                    continue
+                records.append({
+                    "keyword": keyword,
+                    "model": model_name,
+                    "train_start": train_data.index[0],
+                    "train_end": train_data.index[-1],
+                    "test_start": test_data.index[0],
+                    "test_end": test_data.index[-1],
+                    "mae_raw": mae_raw(test_data.values, forecast),
+                    "mae_norm": mae_norm(test_data.values, forecast, train_min, train_max),
+                    "pred_trending": bool(forecast.mean() > train_mean)
+                })
     results_df = pd.DataFrame(records)
     print(f"Evaluation completed with {failures} failures.")
     return results_df
