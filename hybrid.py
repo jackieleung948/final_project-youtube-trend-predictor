@@ -1,70 +1,54 @@
-import pandas as pd
 import sqlite3
+import pandas as pd
 import matplotlib.pyplot as plt
+from data import get_filtered_data
+from config import DB_PATH, HORIZON_BUCKETS
+from models import forecast_arima, fit_lstm, forecast_lstm
+
 
 def main():
-    conn = sqlite3.connect("youtube_trends.db")
 
-    # Read ARIMA model predictions from SQLite database
-    df = pd.read_sql_query("SELECT "
-                           "keyword, "
-                           "hour_bucket, "
-                           "predicted_frequency, "
-                           "is_trending "
-                           "FROM arima_predictions "
-                           "ORDER BY keyword, hour_bucket", conn)
+    series = get_filtered_data()
+    predictions = []
+    for keyword, ser in series.items():
+        arima_fc = forecast_arima(ser, HORIZON_BUCKETS)
+        fitted_lstm = fit_lstm(ser.values)
+        lstm_fc = forecast_lstm(fitted_lstm, ser.values, HORIZON_BUCKETS)
+        if arima_fc is None or lstm_fc is None:
+            continue
+        hybrid_fc = 0.5 * arima_fc + 0.5 * lstm_fc
+        mean_freq = ser.mean()
+        for i, value in enumerate(hybrid_fc, start=1):
+            predictions.append({
+                "keyword": keyword,
+                "bucket": (ser.index[-1] + i * (ser.index[1] - ser.index[0])).strftime("%Y-%m-%d %H"),
+                "predicted_frequency": float(value),
+                "is_trending": bool(hybrid_fc.mean() > mean_freq),
+            })
 
-    # Read LSTM model predictions from SQLite database
-    lstm_df = pd.read_sql_query("SELECT "
-                                "keyword, "
-                                "hour_bucket, "
-                                "predicted_frequency, "
-                                "is_trending "
-                                "FROM lstm_predictions "
-                                "ORDER BY keyword, hour_bucket", conn)
-
-    # Merge ARIMA and LSTM predictions on keyword and hour_bucket
-    merged_df = pd.merge(df, lstm_df, on=['keyword', 'hour_bucket'], suffixes=('_arima', '_lstm'))
-
-    # Weighted average of ARIMA and LSTM predictions (weights can be adjusted based on model performance)
-    weight_arima = 0.5
-    weight_lstm = 1 - weight_arima
-    merged_df['predicted_frequency'] = (merged_df['predicted_frequency_arima'] * weight_arima) + (merged_df['predicted_frequency_lstm'] * weight_lstm)
-
-    # Flag keywords as trending if both models predict them as trending
-    merged_df['is_trending'] = merged_df['is_trending_arima'].astype(bool) & merged_df['is_trending_lstm'].astype(bool)
-
-    # Save the combined predictions to a new table in the SQLite database
-    merged_df.to_sql("hybrid_predictions", conn, if_exists="replace", index=False)
-
-    # Visualize the top 10 trending keywords over time as a line chart
-    top_keywords = merged_df[merged_df['is_trending']].groupby('keyword')['predicted_frequency'].sum().nlargest(10).index
-    pivot_df = merged_df[merged_df['keyword'].isin(top_keywords)].pivot(index='hour_bucket', columns='keyword', values='predicted_frequency')
-    plt.figure(figsize=(12, 6))
-    pivot_df.plot(kind='line', title='Top 10 Trending Keywords Over Time (Hybrid Model)', figsize=(12, 6))
-    plt.xlabel('Hour Bucket')
-    plt.ylabel('Predicted Frequency')
-    plt.xticks(rotation=45)
-    plt.grid(True)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.tight_layout()
-    plt.savefig("hybrid_predictions.png")
-    plt.close()
-    print("Hybrid predictions chart saved to hybrid_predictions.png")
+    merged_df = pd.DataFrame(predictions)
+    if merged_df.empty:
+        print("No predictions available for visualization.")
+        return
+    conn = sqlite3.connect(DB_PATH)
+    merged_df.to_sql("hybrid_predictions", conn,
+                     if_exists="replace", index=False)
+    conn.close()
 
     # Visualize the top 10 trending keywords as a bar chart
     plt.figure(figsize=(12, 6))
-    top10 = merged_df[merged_df['is_trending']].groupby('keyword')['predicted_frequency'].sum().nlargest(10)
-    top10.plot(kind='barh', title='Top 10 Trending Keywords (Hybrid Model)', figsize=(12, 6), legend=False)
+    top10 = merged_df[merged_df['is_trending']].groupby(
+        'keyword')['predicted_frequency'].sum().nlargest(10)
+    top10.plot(kind='barh', title='Top 10 Trending Keywords (Hybrid Model)',
+               figsize=(12, 6), legend=False)
     plt.xlabel('Predicted Frequency')
     plt.ylabel('Keyword')
     plt.grid(True, axis='x')
     plt.tight_layout()
-    plt.savefig("hybrid_top10_predictions.png")
+    plt.savefig("hybrid_bar.png")
     plt.close()
-    print("Hybrid top 10 predictions chart saved to hybrid_top10_predictions.png")
+    print("Hybrid top 10 predictions chart saved to hybrid_bar.png")
 
-    conn.close()
 
 if __name__ == "__main__":
     main()
