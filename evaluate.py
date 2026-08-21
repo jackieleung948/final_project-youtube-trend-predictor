@@ -2,7 +2,8 @@ import argparse
 import sqlite3
 import pandas as pd
 import numpy as np
-from config import (TRAIN_END, BUCKET_HOURS, HORIZON_BUCKETS, STEP)
+import os
+from config import (TRAIN_END, BUCKET_HOURS, HORIZON_BUCKETS, STEP, LABELS_CSV)
 from models import forecast_arima, naive_last, naive_mean, fit_lstm, forecast_lstm, forecast_residual_hybrid, fit_residual_lstm
 from data import get_filtered_data
 
@@ -129,6 +130,32 @@ def summarize(res):
     ).round(3).sort_values(by="mean_mae_raw").reset_index()
     return summary_df
 
+def evaluate_labels(res):
+    """
+    Precision and Recall of pred_trending against Google Trends labels.
+    """
+    if not os.path.exists(LABELS_CSV):
+        print(f"\n(no labels file at {LABELS_CSV} - skipping precision/recall)")
+        return
+    labels = pd.read_csv(LABELS_CSV)
+    pred = (res.groupby(["model", "keyword"])["pred_trending"].any().reset_index().rename(columns={"pred_trending": "pred"}))
+    merged = pred.merge(labels[["keyword", "trending_25", "trending_50", "insufficient_data"]], on="keyword", how="inner")
+    merged = merged[merged["insufficient_data"] == 0]
+    if merged.empty:
+        print("\n(no labels after filtering insufficient data - skipping precision/recall)")
+        return
+    for threshold in ["trending_25", "trending_50"]:
+        print(f"\nEvaluating against {threshold} labels:")
+        for model, g in merged.groupby("model"):
+            tp = ((g["pred"] == 1) & (g[threshold] == 1)).sum()
+            fp = ((g["pred"] == 1) & (g[threshold] == 0)).sum()
+            fn = ((g["pred"] == 0) & (g[threshold] == 1)).sum()
+            precision = tp / (tp + fp) if (tp + fp) > 0 else np.nan
+            recall = tp / (tp + fn) if (tp + fn) > 0 else np.nan
+            f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else np.nan
+            print(f"Model: {model}, Precision: {precision:.3f}, Recall: {recall:.3f}, F1: {f1:.3f}, TP: {tp}, FP: {fp}, FN: {fn}")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Evaluate forecasting models on YouTube trend data.")
     ap.add_argument("--models", nargs="+", required=True, help="List of models to evaluate (e.g., arima naive_last naive_mean)")
@@ -137,6 +164,7 @@ if __name__ == "__main__":
     summary = summarize(results)
     print("\nEvaluation Summary:")
     print(summary)
+    evaluate_labels(results)
     if not results.empty:
         results.to_csv("evaluation_results.csv", index=False)
         print("\nDetailed results saved to 'evaluation_results.csv'.")
