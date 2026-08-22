@@ -21,8 +21,26 @@ def main():
 
     # Read from SQLite database to get video titles and descriptions
     conn = sqlite3.connect("youtube_trends.db")
-    df = pd.read_sql_query(
-        "SELECT video_id, title, description FROM videos", conn)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS keywords_runs (
+            video_id TEXT PRIMARY KEY,
+            processed_at TEXT
+        )''')
+    conn.commit()
+
+    df = pd.read_sql_query('''
+        SELECT v.video_id, v.title, v.description
+        FROM videos v
+        WHERE NOT EXISTS (
+            SELECT 1 FROM keywords_runs kr WHERE kr.video_id = v.video_id)
+            LIMIT 200
+    ''', conn)
+
+    if df.empty:
+        print("No new videos to process for keywords.")
+        conn.close()
+        return
 
     # https://maartengr.github.io/KeyBERT/
     # https://github.com/MaartenGr/KeyBERT
@@ -62,6 +80,10 @@ def main():
     for i, row in df.iterrows():
         video_id = row["video_id"]
         collected_at = pd.Timestamp.now(tz='UTC').isoformat()
+        cursor.execute('''
+            INSERT OR IGNORE INTO keywords_runs (video_id, processed_at)
+            VALUES (?, ?)
+        ''', (video_id, collected_at))
 
         # Save title keywords
         for keyword, relevance_score in row["title_keywords"]:
