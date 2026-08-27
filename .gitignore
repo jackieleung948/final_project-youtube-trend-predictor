@@ -9,3 +9,4 @@ labels/raw/*
 *.png
 *.db
 labels/raw/*
+evaluate_results.csv
