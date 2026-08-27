@@ -1,12 +1,12 @@
 import sqlite3
 import pandas as pd
-from config import (DB_PATH, DATA_START, TRAIN_END, TEST_END, MIN_HOUR_BUCKETS, BUCKET_HOURS, MIN_VIDEO_COUNT, TOP_N)
+from config import (DB_PATH, DATA_START, TRAIN_END, TEST_END, MIN_HOURS_PRESENT, BUCKET_HOURS, MIN_VIDEO_COUNT, TOP_N)
 
 # Get the data from the database and filter it based on the configuration
 def get_filtered_data():
     conn = sqlite3.connect(DB_PATH)
 
-    # Find keywords appearing in at least MIN_VIDEO_COUNT unique videos
+    # Find keywords appearing in at least MIN_HOURS_PRESENT distinct hours in the training window
     video_keyword_df = pd.read_sql_query(
         """
         SELECT k.keyword,
@@ -17,14 +17,15 @@ def get_filtered_data():
         WHERE v.published_at >= ?
         GROUP BY keyword, hour_bucket
         ORDER BY keyword, hour_bucket
-        """, conn, params=(DATA_START,)
+        """, conn, params=(DATA_START.replace(' ', 'T'),)
     )
 
     train_df = video_keyword_df[video_keyword_df["hour_bucket"] < TRAIN_END]
 
     hours_per_kw = train_df.groupby("keyword")["hour_bucket"].nunique()
-    valid_hours = set(hours_per_kw[hours_per_kw >= MIN_HOUR_BUCKETS].index)
+    valid_hours = set(hours_per_kw[hours_per_kw >= MIN_HOURS_PRESENT].index)
 
+    # Find keywords appearing in at least MIN_VIDEO_COUNT unique videos
     valid_video_df = pd.read_sql_query(
         """
         SELECT k.keyword, 
@@ -33,7 +34,7 @@ def get_filtered_data():
         JOIN videos v ON k.video_id = v.video_id
         WHERE v.published_at >= ? AND STRFTIME('%Y-%m-%d %H', v.published_at) < ?
         GROUP BY keyword
-        """, conn, params=(DATA_START, TRAIN_END)
+        """, conn, params=(DATA_START.replace(' ', 'T'), TRAIN_END)
     )
     valid_videos = set(valid_video_df[valid_video_df["video_count"] >= MIN_VIDEO_COUNT]["keyword"])
 
@@ -60,5 +61,6 @@ def get_filtered_data():
     return series
 
 if __name__ == "__main__":
-    for keyword, ser in list(get_filtered_data.items())[:10]:  # Print stats for the first 10 keywords
-        print(f"{keyword:25s} mean={ser.mean():.2f}, max={ser.max()}, nonzero={int((ser > 0).sum())}/{len(ser)}")
+    for keyword, ser in list(get_filtered_data().items())[:10]:  # Print stats for the first 10 keywords
+        first_nz = ser[ser > 0].index[0] if (ser > 0).any() else "never"
+        print(f"{keyword:25s} first_nonzero={first_nz}, mean={ser.mean():.2f}, max={ser.max()}, nonzero={int((ser > 0).sum())}/{len(ser)}")

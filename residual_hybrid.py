@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
-from config import DB_PATH, HORIZON_BUCKETS
+from config import DB_PATH, HORIZON_BUCKETS, BUCKET_HOURS
 from data import get_filtered_data
 from models import fit_residual_lstm, forecast_residual_hybrid
 
@@ -17,8 +17,9 @@ def main():
         for i, value in enumerate(fc, start=1):
             predictions.append({
                 "keyword": keyword,
-                "bucket": (ser.index[-1] + i * (ser.index[1] - ser.index[0])).strftime("%Y-%m-%d %H"),
+                "bucket": (ser.index[-1] + i * pd.Timedelta(hours=BUCKET_HOURS)).strftime("%Y-%m-%d %H"),
                 "predicted_frequency": float(value),
+                # Determine if the keyword is trending based on whether the predicted frequency exceeds the mean frequency
                 "is_trending": bool(fc.mean() > mean_freq),
             })
 

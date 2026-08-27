@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
-from config import DB_PATH, HORIZON_BUCKETS
+from config import DB_PATH, HORIZON_BUCKETS, BUCKET_HOURS
 from data import get_filtered_data
 from models import fit_lstm, forecast_lstm
 
@@ -17,8 +17,9 @@ def main():
         for i, value in enumerate(fc, start=1):
             predictions.append({
                 "keyword": keyword,
-                "bucket": (ser.index[-1] + i * (ser.index[1] - ser.index[0])).strftime("%Y-%m-%d %H"),
+                "bucket": (ser.index[-1] + i * pd.Timedelta(hours=BUCKET_HOURS)).strftime("%Y-%m-%d %H"),
                 "predicted_frequency": float(value),
+                # Determine if the keyword is trending based on whether the predicted frequency exceeds the mean frequency
                 "is_trending": bool(fc.mean() > mean_freq),
             })
 
@@ -36,6 +37,7 @@ def main():
     print(top10)
 
     # Visualize the top 10 predicted trending keywords as a bar chart
+    plt.figure(figsize=(12, 6))
     top10.plot(kind="barh", title="LSTM Predicted Trending Keywords",
                figsize=(12, 6), legend=False)
     plt.xlabel("Predicted Frequency")
@@ -44,6 +46,7 @@ def main():
     plt.tight_layout()
     plt.savefig("lstm_predictions.png")
     print("LSTM predictions chart saved to lstm_predictions.png")
+    plt.close()
 
 
 if __name__ == "__main__":
