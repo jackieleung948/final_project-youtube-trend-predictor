@@ -177,7 +177,7 @@ def evaluate_labels(res):
     ).reset_index().rename(columns={"pred_trending": "pred"}))
     merged = pred.merge(labels[["keyword", "trending_25", "trending_50",
                         "insufficient_data"]], on="keyword", how="inner")
-    merged = merged[merged["insufficient_data"] == 0]
+    merged = merged[merged["insufficient_data"].fillna(0) != 1]
     print(
         f"Keywords with usable labels: {merged['keyword'].nunique()} (out of {labels['keyword'].nunique()})")
     if merged.empty:

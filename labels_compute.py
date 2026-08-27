@@ -14,6 +14,8 @@ for _, row in todo.iterrows():
         continue
     path = f"labels/trends_csvs/{row['keyword']}.csv"
     if not os.path.exists(path):
+        path = f"labels/trends_csv/{row['query_used']}.csv"
+    if not os.path.exists(path):
         out["note"] = "Missing backtest label file"
         results.append(out)
         continue
@@ -34,6 +36,7 @@ for _, row in todo.iterrows():
         continue
     if train_mean == 0:
         out["note"] = "Zero train mean, eyeball manually"
+    out["insufficient_data"] = 0
     out["train_mean"] = train_mean
     out["test_mean"] = test_mean
     out["trending_25"] = trending_25
@@ -44,11 +47,10 @@ final = pd.DataFrame(results)
 final.to_csv("labels/backtest_labels.csv", index=False)
 
 insufficient_data = (final["insufficient_data"] == 1).sum()
-missing = (final["note"] == "Missing backtest label file").sum()
+missing = (final["note"] == "Missing backtest label file").sum() if "note" in final.columns else 0
 labeled = final["trending_25"].notna().sum()
 print(f"Labeled: {labeled}, "
       f"trending_25: {final['trending_25'].sum()}, "
       f"trending_50: {final['trending_50'].sum()}, "
       f"Insufficient data : {insufficient_data},"
       f"Missing files: {missing}")
-
