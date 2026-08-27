@@ -1,0 +1,51 @@
+keyword,query_used,trending_25,trending_50,insufficient_data,train_mean,test_mean
+2026,,,,1.0,,
+banana,,0.0,0.0,,88.44,92.25
+beef,,0.0,0.0,,88.24,88.625
+bengalifood,bengali food,0.0,0.0,,85.2,88.5
+best roti,,0.0,0.0,,68.2,60.25
+biryani chicken,chicken biryani,0.0,0.0,,57.36,61.5
+bread,,0.0,0.0,,90.2,87.5
+breakfast,,0.0,0.0,,95.04,89.25
+breakfast healthy,healthy breakfast,0.0,0.0,,88.52,84.125
+burger,,0.0,0.0,,87.88,82.625
+cake,,0.0,0.0,,91.76,89.125
+chicken,,0.0,0.0,,80.96,79.625
+chicken crispy,crispy chicken,0.0,0.0,,84.88,81.375
+chicken curry,,0.0,0.0,,60.16,60.0
+chicken fried,fried chicken,0.0,0.0,,87.24,88.125
+chicken fry,,0.0,0.0,,59.6,59.5
+chicken juicy,juicy chicken,0.0,0.0,,79.48,79.75
+chicken style,,0.0,0.0,,65.28,65.625
+chickenrecipe,,,,1.0,,
+coconut,,0.0,0.0,,88.68,95.375
+cookingshorts,,,,1.0,,
+cream ice,ice cream,0.0,0.0,,88.4,81.25
+crispy potato,,0.0,0.0,,83.04,79.75
+curry,,0.0,0.0,,63.12,72.75
+curry egg,egg curry,0.0,0.0,,72.0,62.625
+curry fish,fish curry,0.0,0.0,,63.36,52.625
+dessert,,0.0,0.0,,90.52,88.125
+fish fry,,0.0,0.0,,51.96,46.5
+fried rice,,0.0,0.0,,87.72,89.25
+fries,,0.0,0.0,,89.36,85.75
+gadgets rotimaker,,,,1.0,,
+maker roti,roti maker,0.0,0.0,,85.52,81.375
+makers roti,roti makers,0.0,0.0,,4.0,0.0
+mango,,0.0,0.0,,92.04,91.125
+noodles,,0.0,0.0,,90.72,91.0
+pasta,,0.0,0.0,,93.8,91.375
+pasta sauce,,0.0,0.0,,85.16,87.0
+pastatime,,,,1.0,,
+pizza,,0.0,0.0,,92.08,86.5
+potato,,0.0,0.0,,90.72,91.0
+rice,,0.0,0.0,,89.68,89.75
+rotimakingmachine,roti making machine,1.0,0.0,,41.76,52.25
+salad,,0.0,0.0,,89.0,88.0
+sandwich,,0.0,0.0,,94.0,89.25
+snacks,,0.0,0.0,,86.96,85.75
+soup,,0.0,0.0,,94.0,94.375
+subscribe,,,,1.0,,
+tasty,,,,1.0,,
+villagefood,village food,0.0,0.0,,86.04,89.5
+viralshorts,,,,1.0,,
