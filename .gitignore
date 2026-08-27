@@ -10,3 +10,4 @@ labels/raw/*
 *.db
 labels/raw/*
 evaluate_results.csv
+evaluation_results.csv
