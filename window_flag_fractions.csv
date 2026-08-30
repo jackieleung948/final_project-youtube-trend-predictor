@@ -1,0 +1,301 @@
+model,keyword,flag_fraction
+arima,2026,0.1111111111111111
+arima,banana,0.0
+arima,beef,0.037037037037037035
+arima,bengalifood,0.037037037037037035
+arima,best roti,0.14814814814814814
+arima,biryani chicken,0.0
+arima,bread,0.4074074074074074
+arima,breakfast,0.0
+arima,breakfast healthy,0.0
+arima,burger,0.07407407407407407
+arima,cake,0.0
+arima,chicken,0.0
+arima,chicken crispy,0.0
+arima,chicken curry,0.037037037037037035
+arima,chicken fried,0.037037037037037035
+arima,chicken fry,0.0
+arima,chicken juicy,0.0
+arima,chicken style,0.0
+arima,chickenrecipe,0.037037037037037035
+arima,coconut,0.07407407407407407
+arima,cookingshorts,0.14814814814814814
+arima,cream ice,0.037037037037037035
+arima,crispy potato,0.07407407407407407
+arima,curry,0.0
+arima,curry egg,0.2222222222222222
+arima,curry fish,0.037037037037037035
+arima,dessert,0.37037037037037035
+arima,fish fry,0.07407407407407407
+arima,fried rice,0.0
+arima,fries,0.18518518518518517
+arima,gadgets rotimaker,0.14814814814814814
+arima,maker roti,0.2222222222222222
+arima,makers roti,0.14814814814814814
+arima,mango,0.0
+arima,noodles,0.07407407407407407
+arima,pasta,0.07407407407407407
+arima,pasta sauce,0.0
+arima,pastatime,0.0
+arima,pizza,0.18518518518518517
+arima,potato,0.0
+arima,rice,0.0
+arima,rotimakingmachine,0.14814814814814814
+arima,salad,0.18518518518518517
+arima,sandwich,0.037037037037037035
+arima,snacks,0.0
+arima,soup,0.07407407407407407
+arima,subscribe,0.18518518518518517
+arima,tasty,0.07407407407407407
+arima,villagefood,0.0
+arima,viralshorts,0.037037037037037035
+hybrid_avg,2026,0.0
+hybrid_avg,banana,0.0
+hybrid_avg,beef,0.037037037037037035
+hybrid_avg,bengalifood,0.8148148148148148
+hybrid_avg,best roti,0.2222222222222222
+hybrid_avg,biryani chicken,0.07407407407407407
+hybrid_avg,bread,0.5555555555555556
+hybrid_avg,breakfast,0.0
+hybrid_avg,breakfast healthy,0.0
+hybrid_avg,burger,0.037037037037037035
+hybrid_avg,cake,0.037037037037037035
+hybrid_avg,chicken,0.0
+hybrid_avg,chicken crispy,0.18518518518518517
+hybrid_avg,chicken curry,0.5185185185185185
+hybrid_avg,chicken fried,0.25925925925925924
+hybrid_avg,chicken fry,0.07407407407407407
+hybrid_avg,chicken juicy,0.0
+hybrid_avg,chicken style,0.25925925925925924
+hybrid_avg,chickenrecipe,0.07407407407407407
+hybrid_avg,coconut,0.0
+hybrid_avg,cookingshorts,0.5555555555555556
+hybrid_avg,cream ice,0.8148148148148148
+hybrid_avg,crispy potato,0.18518518518518517
+hybrid_avg,curry,0.0
+hybrid_avg,curry egg,0.5185185185185185
+hybrid_avg,curry fish,0.5555555555555556
+hybrid_avg,dessert,0.48148148148148145
+hybrid_avg,fish fry,0.07407407407407407
+hybrid_avg,fried rice,0.0
+hybrid_avg,fries,0.37037037037037035
+hybrid_avg,gadgets rotimaker,0.25925925925925924
+hybrid_avg,maker roti,0.2962962962962963
+hybrid_avg,makers roti,0.18518518518518517
+hybrid_avg,mango,0.18518518518518517
+hybrid_avg,noodles,0.037037037037037035
+hybrid_avg,pasta,0.8888888888888888
+hybrid_avg,pasta sauce,0.0
+hybrid_avg,pastatime,0.0
+hybrid_avg,pizza,0.4444444444444444
+hybrid_avg,potato,0.0
+hybrid_avg,rice,0.037037037037037035
+hybrid_avg,rotimakingmachine,0.2222222222222222
+hybrid_avg,salad,0.4444444444444444
+hybrid_avg,sandwich,0.0
+hybrid_avg,snacks,0.0
+hybrid_avg,soup,0.07407407407407407
+hybrid_avg,subscribe,0.5925925925925926
+hybrid_avg,tasty,0.6666666666666666
+hybrid_avg,villagefood,0.0
+hybrid_avg,viralshorts,0.3333333333333333
+hybrid_residual,2026,0.0
+hybrid_residual,banana,0.4074074074074074
+hybrid_residual,beef,0.0
+hybrid_residual,bengalifood,0.7777777777777778
+hybrid_residual,best roti,0.6666666666666666
+hybrid_residual,biryani chicken,0.037037037037037035
+hybrid_residual,bread,0.5185185185185185
+hybrid_residual,breakfast,0.0
+hybrid_residual,breakfast healthy,1.0
+hybrid_residual,burger,0.14814814814814814
+hybrid_residual,cake,0.5555555555555556
+hybrid_residual,chicken,0.0
+hybrid_residual,chicken crispy,0.7037037037037037
+hybrid_residual,chicken curry,0.7407407407407407
+hybrid_residual,chicken fried,0.8518518518518519
+hybrid_residual,chicken fry,0.9629629629629629
+hybrid_residual,chicken juicy,0.0
+hybrid_residual,chicken style,0.6666666666666666
+hybrid_residual,chickenrecipe,0.6666666666666666
+hybrid_residual,coconut,0.8888888888888888
+hybrid_residual,cookingshorts,0.7777777777777778
+hybrid_residual,cream ice,1.0
+hybrid_residual,crispy potato,0.6666666666666666
+hybrid_residual,curry,0.037037037037037035
+hybrid_residual,curry egg,0.7777777777777778
+hybrid_residual,curry fish,0.8518518518518519
+hybrid_residual,dessert,0.14814814814814814
+hybrid_residual,fish fry,0.4074074074074074
+hybrid_residual,fried rice,0.48148148148148145
+hybrid_residual,fries,0.9629629629629629
+hybrid_residual,gadgets rotimaker,0.6666666666666666
+hybrid_residual,maker roti,0.8518518518518519
+hybrid_residual,makers roti,0.7777777777777778
+hybrid_residual,mango,0.7037037037037037
+hybrid_residual,noodles,0.6296296296296297
+hybrid_residual,pasta,0.7407407407407407
+hybrid_residual,pasta sauce,0.6296296296296297
+hybrid_residual,pastatime,0.037037037037037035
+hybrid_residual,pizza,0.48148148148148145
+hybrid_residual,potato,1.0
+hybrid_residual,rice,0.0
+hybrid_residual,rotimakingmachine,0.8148148148148148
+hybrid_residual,salad,0.37037037037037035
+hybrid_residual,sandwich,0.18518518518518517
+hybrid_residual,snacks,0.6296296296296297
+hybrid_residual,soup,0.7407407407407407
+hybrid_residual,subscribe,0.4074074074074074
+hybrid_residual,tasty,0.8148148148148148
+hybrid_residual,villagefood,0.18518518518518517
+hybrid_residual,viralshorts,0.9259259259259259
+lstm,2026,0.0
+lstm,banana,0.18518518518518517
+lstm,beef,0.07407407407407407
+lstm,bengalifood,0.8518518518518519
+lstm,best roti,0.2962962962962963
+lstm,biryani chicken,0.2222222222222222
+lstm,bread,0.6666666666666666
+lstm,breakfast,0.18518518518518517
+lstm,breakfast healthy,0.0
+lstm,burger,0.14814814814814814
+lstm,cake,0.2962962962962963
+lstm,chicken,0.0
+lstm,chicken crispy,0.8888888888888888
+lstm,chicken curry,0.9629629629629629
+lstm,chicken fried,0.7777777777777778
+lstm,chicken fry,0.9259259259259259
+lstm,chicken juicy,0.0
+lstm,chicken style,1.0
+lstm,chickenrecipe,0.6296296296296297
+lstm,coconut,0.0
+lstm,cookingshorts,0.7777777777777778
+lstm,cream ice,0.8888888888888888
+lstm,crispy potato,0.37037037037037035
+lstm,curry,0.4444444444444444
+lstm,curry egg,0.9259259259259259
+lstm,curry fish,1.0
+lstm,dessert,0.37037037037037035
+lstm,fish fry,0.3333333333333333
+lstm,fried rice,0.5185185185185185
+lstm,fries,0.8518518518518519
+lstm,gadgets rotimaker,0.2962962962962963
+lstm,maker roti,0.37037037037037035
+lstm,makers roti,0.25925925925925924
+lstm,mango,0.9629629629629629
+lstm,noodles,0.07407407407407407
+lstm,pasta,0.9629629629629629
+lstm,pasta sauce,0.037037037037037035
+lstm,pastatime,0.0
+lstm,pizza,0.9259259259259259
+lstm,potato,0.8518518518518519
+lstm,rice,0.14814814814814814
+lstm,rotimakingmachine,0.25925925925925924
+lstm,salad,0.4444444444444444
+lstm,sandwich,0.0
+lstm,snacks,0.5925925925925926
+lstm,soup,0.4444444444444444
+lstm,subscribe,0.5925925925925926
+lstm,tasty,0.9629629629629629
+lstm,villagefood,0.07407407407407407
+lstm,viralshorts,0.5555555555555556
+naive_last,2026,0.0
+naive_last,banana,0.037037037037037035
+naive_last,beef,0.037037037037037035
+naive_last,bengalifood,0.07407407407407407
+naive_last,best roti,0.2962962962962963
+naive_last,biryani chicken,0.25925925925925924
+naive_last,bread,0.25925925925925924
+naive_last,breakfast,0.037037037037037035
+naive_last,breakfast healthy,0.0
+naive_last,burger,0.14814814814814814
+naive_last,cake,0.1111111111111111
+naive_last,chicken,0.0
+naive_last,chicken crispy,0.14814814814814814
+naive_last,chicken curry,0.07407407407407407
+naive_last,chicken fried,0.07407407407407407
+naive_last,chicken fry,0.037037037037037035
+naive_last,chicken juicy,0.0
+naive_last,chicken style,0.1111111111111111
+naive_last,chickenrecipe,0.2222222222222222
+naive_last,coconut,0.0
+naive_last,cookingshorts,0.18518518518518517
+naive_last,cream ice,0.07407407407407407
+naive_last,crispy potato,0.1111111111111111
+naive_last,curry,0.2222222222222222
+naive_last,curry egg,0.14814814814814814
+naive_last,curry fish,0.18518518518518517
+naive_last,dessert,0.07407407407407407
+naive_last,fish fry,0.2222222222222222
+naive_last,fried rice,0.2222222222222222
+naive_last,fries,0.07407407407407407
+naive_last,gadgets rotimaker,0.25925925925925924
+naive_last,maker roti,0.2962962962962963
+naive_last,makers roti,0.2962962962962963
+naive_last,mango,0.0
+naive_last,noodles,0.2222222222222222
+naive_last,pasta,0.14814814814814814
+naive_last,pasta sauce,0.037037037037037035
+naive_last,pastatime,0.037037037037037035
+naive_last,pizza,0.2962962962962963
+naive_last,potato,0.1111111111111111
+naive_last,rice,0.1111111111111111
+naive_last,rotimakingmachine,0.2962962962962963
+naive_last,salad,0.14814814814814814
+naive_last,sandwich,0.07407407407407407
+naive_last,snacks,0.1111111111111111
+naive_last,soup,0.07407407407407407
+naive_last,subscribe,0.18518518518518517
+naive_last,tasty,0.07407407407407407
+naive_last,villagefood,0.07407407407407407
+naive_last,viralshorts,0.1111111111111111
+naive_mean,2026,0.0
+naive_mean,banana,0.0
+naive_mean,beef,0.1111111111111111
+naive_mean,bengalifood,0.0
+naive_mean,best roti,0.25925925925925924
+naive_mean,biryani chicken,0.0
+naive_mean,bread,0.25925925925925924
+naive_mean,breakfast,0.0
+naive_mean,breakfast healthy,0.0
+naive_mean,burger,0.0
+naive_mean,cake,0.0
+naive_mean,chicken,0.0
+naive_mean,chicken crispy,0.0
+naive_mean,chicken curry,0.0
+naive_mean,chicken fried,0.037037037037037035
+naive_mean,chicken fry,0.0
+naive_mean,chicken juicy,0.0
+naive_mean,chicken style,0.0
+naive_mean,chickenrecipe,0.0
+naive_mean,coconut,0.0
+naive_mean,cookingshorts,0.0
+naive_mean,cream ice,0.0
+naive_mean,crispy potato,0.0
+naive_mean,curry,0.0
+naive_mean,curry egg,0.0
+naive_mean,curry fish,0.0
+naive_mean,dessert,0.0
+naive_mean,fish fry,0.0
+naive_mean,fried rice,0.037037037037037035
+naive_mean,fries,0.07407407407407407
+naive_mean,gadgets rotimaker,0.25925925925925924
+naive_mean,maker roti,0.25925925925925924
+naive_mean,makers roti,0.25925925925925924
+naive_mean,mango,0.0
+naive_mean,noodles,0.0
+naive_mean,pasta,0.0
+naive_mean,pasta sauce,0.07407407407407407
+naive_mean,pastatime,0.0
+naive_mean,pizza,0.037037037037037035
+naive_mean,potato,0.0
+naive_mean,rice,0.0
+naive_mean,rotimakingmachine,0.25925925925925924
+naive_mean,salad,0.07407407407407407
+naive_mean,sandwich,0.0
+naive_mean,snacks,0.0
+naive_mean,soup,0.037037037037037035
+naive_mean,subscribe,0.2962962962962963
+naive_mean,tasty,0.0
+naive_mean,villagefood,0.0
+naive_mean,viralshorts,0.0
