@@ -1,16 +1,17 @@
 # Google Trends labels
 
-Ground truth for the backtest - whether the evaluated keyword trended during the test week, according to Google Trends (YouTube Search).
+Ground truth for the backtest - whether the evaluated keyword trended during the test window, according to Google Trends (YouTube Search).
 
 ## Layout
-- 'raw/' - one CSV per keyword downloaded manually from Google Trends as there is no publicly available official API
-- 'backtest_labels.csv' - produced by 'make_label.py', which 'evaluate.py' reads
+- 'backtest_labels_todo.csv' - worklist of the top 50 keywords (from 'labels_skeleton.py') with manually filled query_used (natural search phrasing) and insufficient data flag
+- 'trends_csv/' - one CSV per keyword, manually downloaded from Google Trends due to no official API available. filename = stored keyword (e.g. biryani chicken.csv)
+- 'backtest_labels.csv' - computed labels, produced by 'labels_compute.py' read by 'evaluate.py'
 
 ## Query Settings for Google Trends
 - Region: Worldwide
 - Search type: YouTube Search
 - Category: all categories
-- Date Range: 2026-07-26 to end date
+- Date Range: 2026-07-26 to 2026-08-27
 - One keyword per query
 
 ## Steps
