@@ -56,6 +56,7 @@ pip install -r requirements.txt
 ## Reproducing the Results
 Data: evaluation_results.csv (Aug 27 backtest output). Full DB is attached as youtube_trends.db gz (contains data up until Sept 13), but data.py truncates at TEST_END and filters on the training window, so the backtest reproduces identically. 
 cap_incidence.py and plot_rotimaker requires DB
+DB Asset link: https://github.com/jackieleung948/final_project-youtube-trend-predictor/releases/tag/v1.0-report
 ```
 python evaluate.py --models naive_last naive_mean arima lstm hybrid_avg hybrid_residual
 python labels_compute.py # optional, only if re-label is needed (labels/backtest_labels.csv is committed)
